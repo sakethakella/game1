@@ -1,0 +1,13 @@
+body{
+    margin:0;
+}
+.sco{
+    margin:0;
+    padding: 0;
+    text-align: center;
+    background-color:#87CEEB ;
+    font-size: 3rem;
+    font-weight: 700;
+    font-family: sans-serif;
+    color:blue;
+}
