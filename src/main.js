@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
+import { color } from 'three/tsl';
 
 //required things
 const renderer = new THREE.WebGLRenderer();
@@ -103,6 +104,9 @@ renderer.setAnimationLoop(animate);
 let x= document.querySelectorAll('.sco');
 let score=0;
 let j=5;
+let k=0;
+const colors=[0xf77a04,0x87CEEB,0xffffff,0x333000];
+const colors1=['#f77a04','#87CEEB','#ffffff','#333000'];
 document.addEventListener('keydown',(e)=>{
   const key=e.key;
   if(key==='ArrowUp'){
@@ -142,7 +146,25 @@ document.addEventListener('keydown',(e)=>{
     pathBlocks.push(block);
     j++;
   }
-  camera.position.set(0,10,-25+j*1.5);
+  camera.position.x=box.position.x;
+  camera.position.y=box.position.y+5;
+  camera.position.z=box.position.z-10;
+ }
+ if(score%10===0){
+  scene.background=new THREE.Color(colors[k]);
+  x[0].style.backgroundColor=colors1[k];
+  x[1].style.backgroundColor=colors1[k];
+  k++;
+  plane.position.z=plane.position.z+10;
+   if(k>=4){
+    k=0;
+   }
+ }
+ if(score%4===0){
+  for(let g=0;g<4;g++){
+      const oldBlock = pathBlocks.shift(); // Remove the first block from the array
+      scene.remove(oldBlock);
+  }
  }
 });
 
