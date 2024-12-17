@@ -1,11 +1,14 @@
 import * as THREE from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import { color } from 'three/tsl';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import star from '../src/moon1.jpg';
 
 //required things
+const container= document.getElementById('threejs-container');
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+container.appendChild(renderer.domElement);
 const scene=new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.01,1000);
 const orbit=new OrbitControls(camera, renderer.domElement);
@@ -15,20 +18,38 @@ orbit.update();
 // scene.add(axis);
 // const grid=new THREE.GridHelper(30,10);
 // scene.add(grid);
-scene.background=new THREE.Color(0x87CEEB);
+scene.background=new THREE.Color(0x000000);
 const light2=new THREE.AmbientLight();
 scene.add(light2);
 const light=new THREE.DirectionalLight();
 scene.add(light);
 light.position.set(0,20,10);
-//plane geo
-const planegeo=new THREE.PlaneGeometry(10,300);
-const planemat=new THREE.MeshBasicMaterial({color:0xB8B8B8,side:THREE.DoubleSide});
-const plane=new THREE.Mesh(planegeo,planemat);
-scene.add(plane);
-plane.rotation.x=0.5*Math.PI;
+//
+// const particleCount = 5000;
+// const particles = new THREE.BufferGeometry();
+// const positions = [];
 
+// for (let i = 0; i < particleCount; i++) {
+//   positions.push(
+//     (Math.random() - 0.5) * 100, // X
+//     (Math.random() - 0.5) * 100, // Y
+//     (Math.random() - 0.5) * 100  // Z
+//   );
+// }
+// particles.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+
+// const material = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.1 });
+// const pointCloud = new THREE.Points(particles, material);
+// scene.add(pointCloud);
+//moon
+const moongeo=new THREE.SphereGeometry(8,20,20);
+const moontex=new THREE.TextureLoader().load(star);
+const moonmat=new THREE.MeshBasicMaterial({map:moontex});;
+const moon=new THREE.Mesh(moongeo,moonmat);
+scene.add(moon);
+moon.position.set(20,5,80);
 //player
+
 const boxGeometry = new THREE.BoxGeometry(1,1,1);
 const boxMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
 const box = new THREE.Mesh(boxGeometry, boxMaterial);
@@ -55,15 +76,13 @@ let jumpSpeed = 1;
 let gravity = 0.1;
 let velocity = 0;
 const animate=(time)=>{
+  moon.rotation.y+=0.02;
   renderer.render(scene,camera);
   if(z===1){
     box.position.z+=2;
     z=0;
   }
-  else if(z===-1){
-    box.position.z-=2;
-    z=0;
-  }
+
   else if(z===2){
     velocity -= gravity; // Apply gravity
     box.position.y += velocity;
@@ -80,7 +99,7 @@ const animate=(time)=>{
     velocity -= gravity; // Apply gravity
     box.position.y += velocity;
     box.position.x -= 0.1;
-    box.position.z+=0.1
+    box.position.z+=0.1;
     // End jump when back to ground level
     if (box.position.y <= 1.5) {
       box.position.y = 1.5;
@@ -105,8 +124,6 @@ let x= document.querySelectorAll('.sco');
 let score=0;
 let j=5;
 let k=0;
-const colors=[0xf77a04,0x87CEEB,0xffffff,0x333000];
-const colors1=['#f77a04','#87CEEB','#ffffff','#333000'];
 document.addEventListener('keydown',(e)=>{
   const key=e.key;
   if(key==='ArrowUp'){
@@ -128,7 +145,6 @@ document.addEventListener('keydown',(e)=>{
 
   if(validMove){
     score++;
-   console.log(score);
    x[0].innerHTML=`Score: ${score}`;
    x[1].innerHTML=`High Score:${localStorage.getItem("High_Score")}`;
  }
@@ -150,16 +166,7 @@ document.addEventListener('keydown',(e)=>{
   camera.position.y=box.position.y+5;
   camera.position.z=box.position.z-10;
  }
- if(score%10===0){
-  scene.background=new THREE.Color(colors[k]);
-  x[0].style.backgroundColor=colors1[k];
-  x[1].style.backgroundColor=colors1[k];
-  k++;
-  plane.position.z=plane.position.z+10;
-   if(k>=4){
-    k=0;
-   }
- }
+ 
  if(score%4===0){
   for(let g=0;g<4;g++){
       const oldBlock = pathBlocks.shift(); // Remove the first block from the array
